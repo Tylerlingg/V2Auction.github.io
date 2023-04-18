@@ -6,11 +6,11 @@
 }
 
 .gallery-item {
-  width: .1px;
+  width: 150px; /* Change the width value to make the images smaller */
 }
 
 .gallery-image {
-  width: .1%;
+  width: 100%;
   height: auto;
 }
 
