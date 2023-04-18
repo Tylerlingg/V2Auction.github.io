@@ -26,15 +26,34 @@
     <script src="app.js"></script>
     <div class="gallery-container">
         <div class="gallery-item">
-          <img src="image1.jpg" alt="Image 1" class="gallery-image">
-          <div class="bid-container">
-            <input type="number" id="bidAmount1" min="0" step="0.01" required>
-            <button type="button" onclick="placeBid(1)">Place Bid</button>
-          </div>
-        </div>
-        <!-- Repeat for the other 3 items, changing the image source, id, and onclick argument accordingly -->
-      </div>
-      
+  <img src="image1.jpg" alt="Image 1" class="gallery-image">
+  <div class="bid-container">
+    <input type="number" id="bidAmount1" min="0" step="0.01" required>
+    <button type="button" onclick="placeBid(1)">Place Bid</button>
+  </div>
+</div>
+<div class="gallery-item">
+  <img src="image2.jpg" alt="Image 2" class="gallery-image">
+  <div class="bid-container">
+    <input type="number" id="bidAmount2" min="0" step="0.01" required>
+    <button type="button" onclick="placeBid(2)">Place Bid</button>
+  </div>
+</div>
+<div class="gallery-item">
+  <img src="image3.jpg" alt="Image 3" class="gallery-image">
+  <div class="bid-container">
+    <input type="number" id="bidAmount3" min="0" step="0.01" required>
+    <button type="button" onclick="placeBid(3)">Place Bid</button>
+  </div>
+</div>
+<div class="gallery-item">
+  <img src="image4.jpg" alt="Image 4" class="gallery-image">
+  <div class="bid-container">
+    <input type="number" id="bidAmount4" min="0" step="0.01" required>
+    <button type="button" onclick="placeBid(4)">Place Bid</button>
+  </div>
+</div>
+
 </body>
 </html>
 .gallery-container {
@@ -416,16 +435,16 @@ async function updateUI() {
     document.getElementById('currentHighestBidder').textContent = currentHighestBidder;
 }
 
-async function placeBid(itemIndex) {
-    const bidAmount = parseFloat(document.getElementById(`bidAmount${itemIndex}`).value);
-    if (isNaN(bidAmount) || bidAmount <= 0) {
-      alert('Please enter a valid bid amount.');
-      return;
-    }
-    const weiAmount = web3.utils.toWei(bidAmount.toString(), 'ether');
-    await contract.methods.placeBid().send({ from: accounts[0], value: weiAmount });
-    updateUI();
+async function placeBid(index) {
+  const bidAmount = parseFloat(document.getElementById(`bidAmount${index}`).value);
+  if (isNaN(bidAmount) || bidAmount <= 0) {
+    alert('Please enter a valid bid amount.');
+    return;
   }
+  const weiAmount = web3.utils.toWei(bidAmount.toString(), 'ether');
+  await contract.methods.placeBid().send({ from: accounts[0], value: weiAmount });
+  updateUI();
+}
 
 async function withdrawFunds() {
     await contract.methods.withdraw().send({ from: accounts[0] });
