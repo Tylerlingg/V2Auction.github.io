@@ -23,9 +23,9 @@ const contractABI = [
 				"type": "address"
 			},
 			{
-				"internalType": "uint256",
-				"name": "_tokenId",
-				"type": "uint256"
+				"internalType": "uint256[]",
+				"name": "_tokenIds",
+				"type": "uint256[]"
 			}
 		],
 		"stateMutability": "nonpayable",
@@ -305,8 +305,14 @@ const contractABI = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "tokenId",
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "tokenIds",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -325,7 +331,7 @@ const contractABI = [
 		"type": "function"
 	}
 ]
-const contractAddress = "0x4668327D316BD75a9a402bf096DAAD8efF8Ef63d";
+const contractAddress = "0x238957A011e96f9511d9EA3DB301c8222C7e1b51";
 
 let web3, contract, accounts;
 
