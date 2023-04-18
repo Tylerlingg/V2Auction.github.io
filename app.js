@@ -324,7 +324,7 @@ const contractABI = [
 		"stateMutability": "nonpayable",
 		"type": "function"
 	}
-];
+]
 const contractAddress = "0x4668327D316BD75a9a402bf096DAAD8efF8Ef63d";
 
 let web3, contract, accounts;
@@ -355,18 +355,15 @@ async function updateUI() {
     document.getElementById('currentHighestBidder').textContent = currentHighestBidder;
 }
 
-async function placeBid(e) {
-    e.preventDefault();
-
-    const bidAmount = parseFloat(document.getElementById('bidAmount').value);
-    if (isNaN(bidAmount) || bidAmount <= 0) {
-        alert('Please enter a valid bid amount.');
-        return;
-    }
-
-    const weiAmount = web3.utils.toWei(bidAmount.toString(), 'ether');
-    await contract.methods.placeBid().send({ from: accounts[0], value: weiAmount });
-    updateUI();
+async function placeBid(index) {
+  const bidAmount = parseFloat(document.getElementById(`bidAmount${index}`).value);
+  if (isNaN(bidAmount) || bidAmount <= 0) {
+    alert('Please enter a valid bid amount.');
+    return;
+  }
+  const weiAmount = web3.utils.toWei(bidAmount.toString(), 'ether');
+  await contract.methods.placeBid().send({ from: accounts[0], value: weiAmount });
+  updateUI();
 }
 
 async function withdrawFunds() {
@@ -385,7 +382,7 @@ async function finalizeAuction() {
 }
 
 // Event listeners
-document.getElementById('bid-form').addEventListener('submit', placeBid);
+document.getElementById('bid-form').removeEventListener('submit', placeBid);
 document.getElementById('withdrawBtn').addEventListener('click', withdrawFunds);
 document.getElementById('endAuctionBtn').addEventListener('click', endAuction);
 document.getElementById('finalizeBtn').addEventListener('click', finalizeAuction);
