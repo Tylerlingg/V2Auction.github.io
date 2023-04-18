@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>English Auction</title>
     <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
     <h1>English Auction</h1>
     <div id="auction-info">
@@ -26,38 +24,43 @@
     <button id="finalizeBtn">Finalize Auction</button>
     <script src="https://cdn.jsdelivr.net/npm/web3@1.5.2/dist/web3.min.js"></script>
     <script src="app.js"></script>
+    <div class="gallery-container">
+        <div class="gallery-item">
+          <img src="image1.jpg" alt="Image 1" class="gallery-image">
+          <div class="bid-container">
+            <input type="number" id="bidAmount1" min="0" step="0.01" required>
+            <button type="button" onclick="placeBid(1)">Place Bid</button>
+          </div>
+        </div>
+        <!-- Repeat for the other 3 items, changing the image source, id, and onclick argument accordingly -->
+      </div>
+      
 </body>
-
 </html>
-body {
-font-family: Arial, sans-serif;
-text-align: center;
-max-width: 800px;
-margin: auto;
-padding: 20px;
+.gallery-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
 }
 
-button {
-display: inline-block;
-background-color: #2980b9;
-color: #ffffff;
-border: none;
-padding: 10px 20px;
-cursor: pointer;
-margin: 10px;
+.gallery-item {
+  width: 200px;
 }
 
-button:hover {
-background-color: #3498db;
+.gallery-image {
+  width: 100%;
+  height: auto;
 }
 
-input {
-padding: 5px;
-margin: 5px;
+.bid-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 // Replace with your contract's ABI and address
-const contractABI = [[
+const contractABI = [
 	{
 		"inputs": [
 			{
@@ -382,49 +385,68 @@ const contractABI = [[
 		"stateMutability": "nonpayable",
 		"type": "function"
 	}
-]];
+];
 const contractAddress = "0x4668327D316BD75a9a402bf096DAAD8efF8Ef63d";
 
 let web3, contract, accounts;
 
 async function init() {
-if (typeof window.ethereum !== 'undefined') {
-web3 = new Web3(window.ethereum);
-await window.ethereum.enable();
-} else {
-alert('Please install MetaMask!');
-return;
-}
+    if (typeof window.ethereum !== 'undefined') {
+        web3 = new Web3(window.ethereum);
+        await window.ethereum.enable();
+    } else {
+        alert('Please install MetaMask!');
+        return;
+    }
 
-contract = new web3.eth.Contract(contractABI, contractAddress);
-accounts = await web3.eth.getAccounts();
-updateUI();
+    contract = new web3.eth.Contract(contractABI, contractAddress);
+    accounts = await web3.eth.getAccounts();
+    updateUI();
 }
 
 async function updateUI() {
-const startTimestamp = await contract.methods.start().call();
-const endTimestamp = await contract.methods.end().call();
-const currentHighestBid = await contract.methods.currentHighestBid().call();
-const currentHighestBidder = await contract.methods.currentHighestBidder().call();
+    const startTimestamp = await contract.methods.start().call();
+    const endTimestamp = await contract.methods.end().call();
+    const currentHighestBid = await contract.methods.currentHighestBid().call();
+    const currentHighestBidder = await contract.methods.currentHighestBidder().call();
 
-document.getElementById('start').textContent = new Date(startTimestamp * 1000).toLocaleString();
-document.getElementById('end').textContent = new Date(endTimestamp * 1000).toLocaleString();
-document.getElementById('currentHighestBid').textContent = web3.utils.fromWei(currentHighestBid, 'ether');
-document.getElementById('currentHighestBidder').textContent = currentHighestBidder;
+    document.getElementById('start').textContent = new Date(startTimestamp * 1000).toLocaleString();
+    document.getElementById('end').textContent = new Date(endTimestamp * 1000).toLocaleString();
+    document.getElementById('currentHighestBid').textContent = web3.utils.fromWei(currentHighestBid, 'ether');
+    document.getElementById('currentHighestBidder').textContent = currentHighestBidder;
 }
 
-async function placeBid(e) {
-e.preventDefault();
+async function placeBid(itemIndex) {
+    const bidAmount = parseFloat(document.getElementById(`bidAmount${itemIndex}`).value);
+    if (isNaN(bidAmount) || bidAmount <= 0) {
+      alert('Please enter a valid bid amount.');
+      return;
+    }
+    const weiAmount = web3.utils.toWei(bidAmount.toString(), 'ether');
+    await contract.methods.placeBid().send({ from: accounts[0], value: weiAmount });
+    updateUI();
+  }
 
-const bidAmount = parseFloat(document.getElementById('bidAmount').value);
-if (isNaN(bidAmount) || bidAmount <= 0) { alert('Please enter a valid bid amount.'); return; } const
-    weiAmount=web3.utils.toWei(bidAmount.toString(), 'ether' ); await contract.methods.placeBid().send({ from:
-    accounts[0], value: weiAmount }); updateUI(); } async function withdrawFunds() { await
-    contract.methods.withdraw().send({ from: accounts[0] }); updateUI(); } async function endAuction() { await
-    contract.methods.endAuction().send({ from: accounts[0] }); updateUI(); } async function finalizeAuction() { await
-    contract.methods.finalize().send({ from: accounts[0] }); updateUI(); } // Event listeners
-    document.getElementById('bid-form').addEventListener('submit', placeBid);
-    document.getElementById('withdrawBtn').addEventListener('click', withdrawFunds);
-    document.getElementById('endAuctionBtn').addEventListener('click', endAuction);
-    document.getElementById('finalizeBtn').addEventListener('click', finalizeAuction); // Initialize web3 and update UI
-    init();
+async function withdrawFunds() {
+    await contract.methods.withdraw().send({ from: accounts[0] });
+    updateUI();
+}
+
+async function endAuction() {
+    await contract.methods.endAuction().send({ from: accounts[0] });
+    updateUI();
+}
+
+async function finalizeAuction() {
+    await contract.methods.finalize().send({ from: accounts[0] });
+    updateUI();
+}
+
+// Event listeners
+document.getElementById('bid-form').removeEventListener('submit', placeBid);
+document.getElementById('withdrawBtn').addEventListener('click', withdrawFunds);
+document.getElementById('endAuctionBtn').addEventListener('click', endAuction);
+document.getElementById('finalizeBtn').addEventListener('click', finalizeAuction);
+
+// Initialize web3 and update UI
+init();
