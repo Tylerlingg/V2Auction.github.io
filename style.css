@@ -6,11 +6,11 @@
 }
 
 .gallery-item {
-  width: 10px;
+  width: .1px;
 }
 
 .gallery-image {
-  width: 10%;
+  width: .1%;
   height: auto;
 }
 
